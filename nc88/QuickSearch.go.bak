@@ -1,0 +1,118 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func QuickSearch(arr []int, left int, right int, k int) int {
+	if left == right {
+		return arr[left]
+	}
+
+	if diff := right - left; diff > 1 {
+		// 三数取中
+		center := left + diff/2
+		// 找出最大的值放在右边
+		if arr[center] > arr[right] {
+			arr[right], arr[center] = arr[center], arr[right]
+		}
+		if arr[left] > arr[right] {
+			arr[right], arr[left] = arr[left], arr[right]
+		}
+		// 找出次大的值放在左边作为基准值
+		if arr[center] > arr[left] {
+			arr[center], arr[left] = arr[left], arr[center]
+		}
+	}
+
+	pivot := arr[left] // 基准值
+
+	// 从两端开始扫描，小的放右边(i)，大的放左边(j)
+	i, j := left, right
+	for i < j {
+		// j从右至左扫描，直到找到比基准值大的
+		for ; j > i && arr[j] <= pivot; j-- {
+		}
+		// j位置元素放到左边i位置
+		arr[i] = arr[j]
+
+		// i从左至右扫描，直到找到比基准值小的
+		for ; i < j && arr[i] >= pivot; i++ {
+		}
+		// i位置元素放到右边j位置
+		arr[j] = arr[i]
+	}
+	// 空出来的i位置保存基准值
+	arr[i] = pivot
+
+	if i > k {
+		// 处理左区间
+		return QuickSearch(arr, left, i-1, k)
+	}
+	if i < k {
+		// 处理右区间
+		return QuickSearch(arr, i+1, right, k)
+	}
+
+	return arr[i]
+}
+
+/**
+ *
+ * @param a int整型一维数组
+ * @param n int整型
+ * @param K int整型
+ * @return int整型
+ */
+func findKth(a []int, n int, K int) int {
+	// write code here
+
+	if n == 0 || K == 0 || K > n {
+		return -1
+	}
+
+	return QuickSearch(a, 0, n-1, K-1)
+}
+
+func CreateRandomArray(count int) []int {
+	slice := make([]int, count)
+	for i := 0; i < count; i++ {
+		slice[i] = i
+	}
+
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	for i := 0; i < count/2; i++ {
+		j := r.Intn(count)
+		if i != j {
+			slice[i], slice[j] = slice[j], slice[i]
+		}
+	}
+
+	return slice
+}
+
+func main() {
+	now := time.Now()
+
+	// r := rand.New(rand.NewSource(time.Now().Unix()))
+
+	for i := 10; i < 100; i++ {
+		input := CreateRandomArray(i)
+
+		// k := r.Intn(6)
+		// for k == 0 {
+		// 	k = r.Intn(6)
+		// }
+
+		result := findKth(input, len(input), 6)
+		fmt.Println(result)
+
+	}
+
+	result := findKth([]int{1332802, 1177178, 1514891, 871248, 753214, 123866, 1615405, 328656, 1540395, 968891, 1884022, 252932, 1034406, 1455178, 821713, 486232, 860175, 1896237, 852300, 566715, 1285209, 1845742, 883142, 259266, 520911, 1844960, 218188, 1528217, 332380, 261485, 1111670, 16920, 1249664, 1199799, 1959818, 1546744, 1904944, 51047, 1176397, 190970, 48715, 349690, 673887, 1648782, 1010556, 1165786, 937247, 986578, 798663}, 49, 24)
+	fmt.Println(result)
+
+	fmt.Println("findKth: ", time.Since(now))
+}

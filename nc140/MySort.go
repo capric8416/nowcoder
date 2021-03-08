@@ -140,7 +140,9 @@ func CreateRandomArray(count int) []int {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	for i := 0; i < count/2; i++ {
 		j := r.Intn(count)
-		slice[i], slice[j] = slice[j], slice[i]
+		if i != j {
+			slice[i], slice[j] = slice[j], slice[i]
+		}
 	}
 
 	return slice
