@@ -16,7 +16,7 @@ func lt(a int, b *int) bool {
 	return b != nil && a < *b
 }
 
-func dfs(root *TreeNode, depth int, maxDepth, secondDepth *int, ancestor *int, compare func(int, *int) bool, search, complete *bool) {
+func dfs(root *TreeNode, depth int, maxDepth *int, ancestor *int, compare func(int, *int) bool, search, complete *bool) {
 	if *search == false && *complete == false {
 		return
 	}
@@ -28,13 +28,10 @@ func dfs(root *TreeNode, depth int, maxDepth, secondDepth *int, ancestor *int, c
 			*complete = false
 		} else {
 			if *maxDepth == 0 {
-				*maxDepth, *secondDepth = depth, depth
+				*maxDepth = depth
 			} else {
-				maxSub, secondSub := *maxDepth-depth, *secondDepth-depth
-				if maxSub == 0 {
-				} else if maxSub == 1 {
-					*secondDepth = depth
-				} else if maxSub < 0 || maxSub > 1 || secondSub < 0 || secondSub > 0 {
+				maxSub := *maxDepth - depth
+				if maxSub < 0 || maxSub > 1 {
 					*complete = false
 				}
 			}
@@ -54,11 +51,11 @@ func dfs(root *TreeNode, depth int, maxDepth, secondDepth *int, ancestor *int, c
 	}
 
 	if root.Left != nil {
-		dfs(root.Left, depth, maxDepth, secondDepth, &root.Val, gt, search, complete)
+		dfs(root.Left, depth, maxDepth, &root.Val, gt, search, complete)
 	}
 
 	if root.Right != nil {
-		dfs(root.Right, depth, maxDepth, secondDepth, &root.Val, lt, search, complete)
+		dfs(root.Right, depth, maxDepth, &root.Val, lt, search, complete)
 	}
 }
 
@@ -74,8 +71,8 @@ func judgeIt(root *TreeNode) []bool {
 		return []bool{true, true}
 	}
 
-	search, complete, maxDepth, secondDepth := true, true, 0, 0
-	dfs(root, 0, &maxDepth, &secondDepth, nil, gt, &search, &complete)
+	search, complete, maxDepth := true, true, 0
+	dfs(root, 0, &maxDepth, nil, gt, &search, &complete)
 	return []bool{search, complete}
 }
 
